@@ -17,5 +17,10 @@ class ZonghengItem(scrapy.Item):
     newChapterTitle = scrapy.Field()
     textNumber = scrapy.Field()
     author = scrapy.Field()
+
+
 class ZonghengBookDetailItem(scrapy.Item):
-    pass
+    bookCover = scrapy.Field()
+    bookDescription = scrapy.Field()
+    bookKeyWord = scrapy.Field()
+    link = scrapy.Field()

@@ -8,6 +8,7 @@ import pymysql
 from spider import settings
 import time
 
+
 class ZongHengPipeline(object):
     def __init__(self):
         self.connect = pymysql.connect(
@@ -20,15 +21,26 @@ class ZongHengPipeline(object):
         self.cursor = self.connect.cursor()
 
     def process_item(self, item, spider):
-        # print(str(item.__class__) == "<class 'spider.items.ZonghengItem'>")
-        # print(item['author'])
-        # f = open("/home/hanyun/spider/log.log", 'a')
-        # f.write(str(item.__class__) + '\n')   textNumber
-        # f.close()
-        sql = """
-INSERT INTO app.lee_book (book_name, book_author, book_href, book_category, book_text_number, book_add_time)
- VALUES ('%s','%s','%s','%s','%s','%s')""" % (
-        item['bookTitle'][0], item['author'][0], item['bookLink'][0], item['category'][0], int(item['textNumber'][0]),int(time.time()))
-        print(sql)
-        self.cursor.execute(sql)
-        self.connect.commit()
+        if str(item.__class__) == "<class 'spider.items.ZonghengItem'>":
+            if len(item['bookLink']) == 0:
+                return
+            sql = "select * from lee_book WHERE book_href='%s'" % (item['bookLink'][0])
+            self.cursor.execute(sql)
+            book = self.cursor.fetchone()
+            if book:
+                # update
+                pass
+            else:
+                sql = """INSERT INTO app.lee_book (book_name, book_author, book_href, book_category, book_text_number, book_add_time) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')""" \
+                      % (
+                          item['bookTitle'][0], item['author'][0], item['bookLink'][0], item['category'][0],
+                          int(item['textNumber'][0]), int(time.time()))
+                self.cursor.execute(sql)
+                self.connect.commit()
+        else:
+            sql = """update lee_book set book_cover='%s',book_description='%s',book_key_word='%s',book_add_time='%s' WHERE book_href='%s'""" % (
+                item['bookCover'][0], ''.join(item['bookDescription']).replace('\n', '').replace('\t', ''),
+                ''.join(item['bookKeyWord']).replace('\n', '').replace('\t', ''), int(time.time()), item['link'])
+            print(sql)
+            self.cursor.execute(sql)
+            self.connect.commit()
