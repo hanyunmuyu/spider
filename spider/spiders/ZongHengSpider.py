@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from spider.items import ZonghengItem, ZonghengBookDetailItem
+from spider.items import ZonghengItem, ZonghengBookDetailItem, ZonghengChapter
 from scrapy import Request
 from scrapy.spider import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
@@ -15,7 +15,7 @@ class ZonghengspiderSpider(scrapy.Spider):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        for i in range(1000):
+        for i in range(2):
             self.start_urls.append('http://book.zongheng.com/store/c0/c0/b0/u0/p%s/v9/s9/t0/ALL.html' % (str(i)))
 
     def parse(self, response):
@@ -31,7 +31,6 @@ class ZonghengspiderSpider(scrapy.Spider):
             yield item
             if len(item['bookLink']) > 0:
                 yield Request(item['bookLink'][0], callback=self.parse_detail)
-                pass
 
     def parse_detail(self, response):
         href = response.xpath("/html/body/div[4]/div/div[1]/div/div/div/div[2]/div[4]/span[2]/a/@href").extract()
@@ -43,12 +42,18 @@ class ZonghengspiderSpider(scrapy.Spider):
             "/html/body/div[4]/div/div[1]/div/div/div/div[2]/div[3]/a/text()").extract()
         item['link'] = response.url
         yield item
-        # yield Request(href[0], callback=self.parse_chapter)
+        yield Request(href[0], callback=self.parse_chapter)
 
     def parse_chapter(self, response):
+        url = str(response.url).replace('showchapter/', 'book/', 1)
         tdList = response.xpath("//td[@class='chapterBean']")
-        if len(tdList):
-            for td in tdList:
-                href = td.xpath('./a/@href').extract()
-                title = td.xpath('./a/text()').extract()
-                updateInfo = td.xpath('./a/@title').extract()
+        for td in tdList:
+            href = td.xpath('./a/@href').extract()
+            title = td.xpath('./a/text()').extract()
+            updateInfo = td.xpath('./a/@title').extract()
+            item = ZonghengChapter()
+            item['parentUrl'] = url
+            item['url'] = href
+            item['title'] = title
+            item['textNumber'] = updateInfo
+            yield item

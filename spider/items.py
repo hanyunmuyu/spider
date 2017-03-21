@@ -24,3 +24,10 @@ class ZonghengBookDetailItem(scrapy.Item):
     bookDescription = scrapy.Field()
     bookKeyWord = scrapy.Field()
     link = scrapy.Field()
+
+
+class ZonghengChapter(scrapy.Item):
+    parentUrl = scrapy.Field()
+    url = scrapy.Field()
+    title = scrapy.Field()
+    textNumber = scrapy.Field()

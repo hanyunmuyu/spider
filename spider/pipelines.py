@@ -37,10 +37,25 @@ class ZongHengPipeline(object):
                           int(item['textNumber'][0]), int(time.time()))
                 self.cursor.execute(sql)
                 self.connect.commit()
-        else:
+        elif str(item.__class__) == "<class 'spider.items.ZonghengBookDetailItem'>":
             sql = """update lee_book set book_cover='%s',book_description='%s',book_key_word='%s',book_add_time='%s' WHERE book_href='%s'""" % (
                 item['bookCover'][0], ''.join(item['bookDescription']).replace('\n', '').replace('\t', ''),
                 ''.join(item['bookKeyWord']).replace('\n', '').replace('\t', ''), int(time.time()), item['link'])
-            print(sql)
             self.cursor.execute(sql)
             self.connect.commit()
+        elif str(item.__class__) == "<class 'spider.items.ZonghengChapter'>":
+            if len(item):
+                sql = "select * from lee_book_chapter WHERE chapter_href='%s'" % (item['title'][0])
+                self.cursor.execute(sql)
+                chapter = self.cursor.fetchone()
+                if chapter:
+                    return
+                sql = "select * from lee_book where book_href='%s'" % (item['parentUrl'])
+                self.cursor.execute(sql)
+                book = self.cursor.fetchone()
+                bookId = book[0]
+                sql = "insert into lee_book_chapter (book_id,chapter_title,chapter_href,update_at) VALUES ('%s','%s','%s','%s')" % (
+                    bookId, item['title'][0], item['url'][0],
+                    int(time.time()))
+                self.cursor.execute(sql)
+                self.connect.commit()
