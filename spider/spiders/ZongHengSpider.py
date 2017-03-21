@@ -15,7 +15,7 @@ class ZonghengspiderSpider(scrapy.Spider):
 
     def __init__(self, name=None, **kwargs):
         super().__init__(name, **kwargs)
-        for i in range(2):
+        for i in range(1000):
             self.start_urls.append('http://book.zongheng.com/store/c0/c0/b0/u0/p%s/v9/s9/t0/ALL.html' % (str(i)))
 
     def parse(self, response):
