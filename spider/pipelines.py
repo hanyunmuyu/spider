@@ -64,4 +64,4 @@ class ZongHengPipeline(object):
                 item['chapterPath'], int(item['chapterTextNumber']), int(item['updateAt']), item['chapterHref'])
             self.cursor.execute(sql)
             self.connect.commit()
-            redis.redisConnect.srem(item['chapterHref'])
+            redis.redisConnect.srem(settings.CHAPTER_SET,item['chapterHref'])
