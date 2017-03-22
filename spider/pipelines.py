@@ -5,7 +5,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import pymysql
-from spider import settings
+from spider import settings, redis
 import time
 
 
@@ -64,3 +64,4 @@ class ZongHengPipeline(object):
                 item['chapterPath'], int(item['chapterTextNumber']), int(item['updateAt']), item['chapterHref'])
             self.cursor.execute(sql)
             self.connect.commit()
+            redis.redisConnect.srem(item['chapterHref'])
