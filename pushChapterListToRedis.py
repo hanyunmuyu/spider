@@ -10,7 +10,7 @@ connect = pymysql.connect(
     charset='utf8',
     use_unicode=True)
 cursor = connect.cursor()
-cursor.execute("select * from lee_book_chapter WHERE chapter_path IS NULL limit 5000")
+cursor.execute("select * from lee_book_chapter WHERE chapter_path IS NULL")
 chapterList = cursor.fetchall()
 if chapterList:
     for chapter in chapterList:
