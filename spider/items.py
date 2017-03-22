@@ -31,3 +31,10 @@ class ZonghengChapter(scrapy.Item):
     url = scrapy.Field()
     title = scrapy.Field()
     textNumber = scrapy.Field()
+
+
+class ZonghengChapterDetail(scrapy.Item):
+    chapterPath = scrapy.Field()
+    chapterTextNumber = scrapy.Field()
+    updateAt = scrapy.Field()
+    chapterHref = scrapy.Field()

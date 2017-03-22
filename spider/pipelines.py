@@ -59,3 +59,8 @@ class ZongHengPipeline(object):
                     int(time.time()))
                 self.cursor.execute(sql)
                 self.connect.commit()
+        elif str(item.__class__) == "<class 'spider.items.ZonghengChapterDetail'>":
+            sql = "update lee_book_chapter set chapter_path='%s',chapter_text_number='%s',update_at='%s',is_crawled=1 where chapter_href='%s' AND is_crawled=0" % (
+                item['chapterPath'], int(item['chapterTextNumber']), int(item['updateAt']), item['chapterHref'])
+            self.cursor.execute(sql)
+            self.connect.commit()
